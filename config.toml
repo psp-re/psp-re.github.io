@@ -1,7 +1,7 @@
 # The URL the site will be built for
 base_url = "https://psp.re"
 
-title = "PSP Reverse Engineering Blog"
+title = "PSP Reverse Engineering HQ"
 
 description = "Your one stop shop for all things PSP Reverse Engineering"
 
@@ -22,4 +22,8 @@ highlight_code = true
 build_search_index = true
 
 [extra]
-# Put all your custom variables here
+hyde_links = [
+    {url="/", name = "Home"},
+    {url="/blog", name = "Blog"},
+    {url="https://github.com/sajattack/psp.re", name = "Edit on Github"},
+]
