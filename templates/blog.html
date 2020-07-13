@@ -1,12 +1,21 @@
 {% extends "hyde/templates/page.html" %}
+{% block title %}{{config.title}} - Blog{% endblock title %}
 
-{% block content %}
-<h1 class="title">
-  {{ section.title }}
-</h1>
-<ul>
-  {% for page in section.pages %}
-  <li><a href="{{ page.permalink | safe }}">{{ page.title }}</a></li>
-  {% endfor %}
-</ul>
-{% endblock content %}
+<div class="content container">
+    {% block content %}
+        <h1>Blog</h1>
+        <div class="posts">
+            {% for page in section.pages | reverse %}
+              <div class="post">
+                <h2 class="post-title">
+                  <a href="{{ page.permalink }}">
+                    {{ page.title }}
+                  </a>
+                </h2>
+                <span class="post-date">{{ page.date | date(format="%B %d %Y") }}</span>
+                <p>{{ page.description }}</p>
+              </div>
+            {% endfor %}
+        </div>
+    {% endblock content %}
+</div>
