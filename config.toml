@@ -11,6 +11,8 @@ theme = "hyde"
 
 highlight_theme = "1337"
 
+generate_feed = true
+
 # Whether to automatically compile all Sass files in the sass directory
 compile_sass = true
 

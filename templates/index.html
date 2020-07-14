@@ -1,1 +1,6 @@
 {% extends "hyde/templates/index.html" %}
+
+{% block content %}
+	<h1>{{ section.title }}</h1>
+  <div>{{ section.content | safe }}</div>
+{% endblock content %}
