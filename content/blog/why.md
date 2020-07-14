@@ -2,8 +2,6 @@
 title = "Why Reverse Engineer The PSP?"
 date = 2020-07-13
 description = "A summary of the reasons this website exists"
-[taxonomies]
-author = ["Paul Sajna"]
 +++
 
 ## Background
