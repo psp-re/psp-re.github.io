@@ -20,4 +20,4 @@ author = "Paul Sajna"
 - Space Invaders - Galaxy Beat (Japan) (v1.02)
 - Yu-Gi-Oh! Duel Monsters GX - Tag Force (Japan) (En,Ja,Fr,De,Es,It) (v1.02)
 
-Feel free to PR https://github.com/sajattack/psp.re if you find more!
+Feel free to PR [this website on github](https://github.com/sajattack/psp.re) if you find more!
