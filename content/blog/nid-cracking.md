@@ -1,6 +1,6 @@
 +++
 title = "NID Cracking"
-date = 2020-10-17
+date = 2020-10-07
 description = "Fun with hash collisions"
 [extra]
 author = "Paul Sajna"
