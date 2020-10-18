@@ -178,6 +178,7 @@ rayon = "1.4.1"
 itertools = "0.8.2"
 ```
 
+The latest version of the code is available at [https://github.com/sajattack/nidcracker](https://github.com/sajattack/nidcracker).
 Build the project like any other rust project, with `cargo build --release`, and the binary
 will be output as target/release/nidcracker.
 
