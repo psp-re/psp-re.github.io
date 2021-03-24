@@ -1,5 +1,5 @@
 +++
-title = "Carefully Crafted Words"
+title = "Choose your words wisely"
 date = 2021-03-23
 description = "Followup to NID Cracking"
 [extra]
@@ -12,7 +12,7 @@ author = "Paul Sajna"
 
 What went wrong when I initially tested my Rust nidcracker program? As I 
 mentioned in the original post, high entropy and a small hash == garbage output.
-The highentropy problem comes from using every permutation of 4 words from 
+The high entropy problem comes from using every permutation of 4 words from 
 1000 words (give or take).
 
 ## The solution
