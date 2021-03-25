@@ -27,13 +27,9 @@ related to what the functions were doing, and successfully cracked a few unknown
 NIDs. 
 
 ```
-found match: 0x43C9A8DB = sceKernelL1IcacheInvalidateRange
 found match: 0x7939C851 = sceChkregGetPspModel
+found match: 0x6894A027 = sceChkregGetPsFlags
 ```
-
-User artart78, another contributor to UOFW, armed with Meeeow's result, also
-identified 0x0939D45C as sceKernelL2CacheWritebackAll, though I don't believe he
-used my nidcracker to find this NID. 
 
 ## Lessons
 
@@ -78,4 +74,4 @@ In conclusion:
 > Don't worry, be happy. -Bob Marley
 
 PS: I wrote a [hashcat module for NIDs](https://github.com/pspdev/hashcat) after
-I was rejuvenated by the successful outcomes of Meeeow and artart78. 
+I was inspired by the successful outcomes of Meeeow.
