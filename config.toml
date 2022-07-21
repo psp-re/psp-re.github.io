@@ -1,5 +1,5 @@
 # The URL the site will be built for
-base_url = "https://psp.re"
+base_url = "https://sajattack.github.io/psp.re"
 
 title = "PSP Reverse Engineering HQ"
 
