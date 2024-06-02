@@ -5,8 +5,10 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/code'
     steps:
-      - name: checkout
-        uses: actions/checkout@v2
+      - name: git_checkout
+        uses: actions/checkout@v4
+        with:
+          ssh-key: ${{ secrets.PSP_RE_DEPLOY_PRIVKEY }}
       - name: build_and_deploy
         uses: shalzz/zola-deploy-action@v0.18.0
         env:
