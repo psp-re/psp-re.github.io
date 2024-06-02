@@ -30,6 +30,7 @@ build_search_index = true
 [extra]
 hyde_links = [
     {url="/", name = "Home"},
+    {url="/quickstart", name = "Quick start guide"},
     {url="/blog", name = "Blog"},
     {url="https://github.com/sajattack/psp.re", name = "Edit on Github"},
 ]

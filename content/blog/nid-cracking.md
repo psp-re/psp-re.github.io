@@ -49,7 +49,7 @@ It is plain to see  that they start with the same 4 bytes (8 characters), and if
 read the bytes (digit pairs) backwards, you will see the NID. So that's no good, 
 we have multiple possible answers to the same problem, and both of them are nonsensical. 
 I'm unsure how functionnames were ever recovered from NIDs, after working through this.
-I know some of the function names were leaked in [games with debug symbols](http://psp.re/blog/list/),
+I know some of the function names were leaked in [games with debug symbols](/blog/list/),
 but that doesn't account for all the kernel functions that were never used in games
 that have been recovered. Maybe the salts narrow the problem down a bit, I'm not sure.
 I tested without salts, because I was told earlier versions of the kernel didn't use them,
@@ -161,7 +161,7 @@ fn main() {
 
 I hard-coded the module name to look for functions of the sceSysreg module for this first
 test, and was planning to cover other modules as well. The program then uses rayon's parallel iterator and itertools to calculate permutations of a wordlist, and calculates hashes of the permuations with openssl. I used a python program to build a wordlist from known nids (basically splitting camelcase into words), and got some unknown nids from the emulator 
-[JPCSP](https://github.com/jpcsp/jpcsp/blob/d4c891ec1e9ba820a70a9f17ba0af3295b593c6b/src/jpcsp/HLE/modules/sceSysreg.java). My wordlist is at [https://psp.re/wordlist.txt](https://psp.re/wordlist.txt) and the nids I chose to crack are at [https://psp.re/unknown_nids.txt](https://psp.re/unknown_nids.txt)
+[JPCSP](https://github.com/jpcsp/jpcsp/blob/d4c891ec1e9ba820a70a9f17ba0af3295b593c6b/src/jpcsp/HLE/modules/sceSysreg.java). My wordlist is at [wordlist.txt](/wordlist.txt) and the nids I chose to crack are at [unknown_nids.txt](/unknown_nids.txt)
 
 Rust projects also have a Cargo.toml file with basic metadata, which I will supply below
 
