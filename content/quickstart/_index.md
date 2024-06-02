@@ -5,7 +5,7 @@ template = "index.html"
 
 ## Introduction
 
-This short guide will present you all the necessary ressources you need to start reverse
+This short guide will present you all the necessary resources you need to start reverse
 engineering on PSP. This guide works for both reverse engineering kernel modules and
 userland (most probably game) binaries.
 
@@ -53,6 +53,9 @@ Now that Ghidra is up and running, you should:
 3. Run the `SonyPSPResolveNIDs.py` script
 4. Open the .gdt file with `Menu -> Open File Archive...` in the `Data Type Manager`
 5. Right click on the imported data type archive and use `Apply Function Data Types`
+
+If you're reverse engineering a low-level kernel module addressing the hardware through the `0xB.......`
+memory range, you'll also want to run the `SonyPSPMapHWRegisters.py` script (you can run it anytime).
 
 Now all the imports should use the correct signatures, and you're good to go!
 
