@@ -9,7 +9,7 @@ This short guide will present you all the necessary resources you need to start 
 engineering on PSP. This guide works for both reverse engineering kernel modules and
 userland (most probably game) binaries.
 
-It is supposed you already know how to reverse engineer: if you don't, check a ghidra
+It is supposed you already know how to reverse engineer: if you don't, check a Ghidra
 tutorial and preferably also a MIPS assembly course.
 
 Note there exists alternatives to Ghidra, for example using IDA Pro. Ghidra is used here because:
@@ -51,8 +51,9 @@ Now that Ghidra is up and running, you should:
 1. Import the (decrypted) binary file in Ghidra
 2. Run "Analyze" when prompted for it
 3. Run the `SonyPSPResolveNIDs.py` script
-4. Open the .gdt file with `Menu -> Open File Archive...` in the `Data Type Manager`
-5. Right click on the imported data type archive and use `Apply Function Data Types`
+4. Import the .gdt type archive into the Ghidra project (the same way you imported the binary file)
+5. In the `Data Type Manager` open it with `Menu -> Open Project Archive...`
+6. Right-click on the imported data type archive and use `Apply Function Data Types`
 
 If you're reverse engineering a low-level kernel module addressing the hardware through the `0xB.......`
 memory range, you'll also want to run the `SonyPSPMapHWRegisters.py` script (you can run it anytime).
