@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+      <!-- Enable responsiveness on mobile devices-->
+      <!-- viewport-fit=cover is to support iPhone X rounded corners and notch in landscape-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+
+      <title>PSP Reverse Engineering HQ</title>
+
+      <!-- CSS -->
+      <link rel="stylesheet" href="https://psp-re.github.io/print.css" media="print">
+      <link rel="stylesheet" href="https://psp-re.github.io/poole.css">
+      <link rel="stylesheet" href="https://psp-re.github.io/hyde.css">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+      
+        <link rel="alternate" type="application/atom+xml" title="RSS" href="https://psp-re.github.io/atom.xml">
+      
+
+      
+      
+    </head>
+
+    <body class=" ">
+        
+            <div class="sidebar">
+                <div class="container sidebar-sticky">
+                    <div class="sidebar-about">
+                        
+                            <a href="https:&#x2F;&#x2F;psp-re.github.io"><h1>PSP Reverse Engineering HQ</h1></a>
+                            
+                            <p class="lead">Your one stop shop for all things PSP Reverse Engineering</p>
+                            
+                        
+                    </div>
+
+                    <ul class="sidebar-nav">
+                        
+                        
+                        <li class="sidebar-nav-item"><a href="&#x2F;">Home</a></li>
+                        
+                        <li class="sidebar-nav-item"><a href="&#x2F;quickstart">Quick start guide</a></li>
+                        
+                        <li class="sidebar-nav-item"><a href="&#x2F;blog">Blog</a></li>
+                        
+                        <li class="sidebar-nav-item"><a href="https:&#x2F;&#x2F;github.com&#x2F;sajattack&#x2F;psp.re">Edit on Github</a></li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div class="content container">
+            
+<h1 class="title">
+  NID Cracking
+</h1>                
+<span class="subtitle">By Paul Sajna</span><p/>
+<span class="post-date">October 07 2020</span>
+<p><h2 id="what-is-a-nid">What is a NID?</h2>
+<p>A NID, which I believe stands for Name Identifier, is an identifier used in Sony's PRX
+executable format for function imports and exports. They are located in the .rodata.SceNid
+section of every PRX, to identify which operating system or other external functions are
+used in the program. A NID consists of the first 4 little-endian bytes of the SHA-1 hash
+of the function name, and in later versions of the PSP OS, a salt.  Legend has it, 
+they can be bruteforced to discover the names Sony used for their functions, to aid in
+reverse engineering. Experienced cryptographers would have probably realized the problem
+before writing a program to check the results. </p>
+<h2 id="the-problem">The problem</h2>
+<p>So it turns out, there are quite a few hash collisions for the first 4 hexadecimal bytes 
+of a SHA-1 hash. Here are a few of my favourites, which you can check by running 
+<code>echo -n &lt;name&gt; | sha1sum</code>
+on any linux pc (assuming checksum packages are installed). Note that you have to swap 
+endianness (read the bytes backwards). </p>
+<pre><code>7CF05E81 = sceSysregAllocateNotifyRapidHead
+4C0BED71 = sceSysregAbortFatfmtSteepIn
+7CF05E81 = sceSysregActivateDataMbogoPIO
+</code></pre>
+<p>I purposely chose two here that came up with the same NID for the function name, to 
+demonstrate the problem of hash collisions. If you're following along at home, run the 
+following at a linux prompt:</p>
+<pre><code>echo -n sceSysregAllocateNotifyRapidHead | sha1sum
+echo -n sceSysregActivateDataMbogoPIO | sha1sum
+</code></pre>
+<p>The results are</p>
+<pre><code>815ef07c4b2f44c74cab9af3772c49e49dc41544  -
+815ef07cbd77ac3b13f1813c063aff7794960741  -
+</code></pre>
+<p>It is plain to see  that they start with the same 4 bytes (8 characters), and if you
+read the bytes (digit pairs) backwards, you will see the NID. So that's no good, 
+we have multiple possible answers to the same problem, and both of them are nonsensical. 
+I'm unsure how functionnames were ever recovered from NIDs, after working through this.
+I know some of the function names were leaked in <a href="/blog/list/">games with debug symbols</a>,
+but that doesn't account for all the kernel functions that were never used in games
+that have been recovered. Maybe the salts narrow the problem down a bit, I'm not sure.
+I tested without salts, because I was told earlier versions of the kernel didn't use them,
+with NIDs, and it was easier for me not to.</p>
+<h2 id="methods">Methods</h2>
+<p>So, if you want to try your hand at NID cracking, I'll explain what I did in this section.
+I wrote a parallelized <a href="https://rust-lang.org">Rust</a> program that runs on a modern
+desktop CPU. I was planning to later use GPUs for more parallelism/speed, but the 
+ridiculous results I got have me convinced it's not worth persuing further. </p>
+<p>If you're unfamiliar with Rust, you can download it at <a href="https://rustup.rs">https://rustup.rs</a>, and learn how to use it at <a href="https://doc.rust-lang.org/book/">https://doc.rust-lang.org/book/</a></p>
+<p>The (slightly messy) source of my program is below:</p>
+<pre data-lang="rust" class="language-rust "><code class="language-rust" data-lang="rust">use openssl::sha::sha1;
+use rayon::prelude::*;
+use rayon::iter::ParallelBridge;
+use std::fs::read_to_string;
+use itertools::Itertools;
+
+fn main() {
+    &#x2F;&#x2F;let module_names_string = read_to_string(&quot;module-names.txt&quot;).unwrap();
+    &#x2F;&#x2F;let module_names_split = module_names_string.split(&#x27;\n&#x27;);
+    &#x2F;&#x2F;let module_names: Vec&lt;&amp;str&gt; = module_names_split.collect();
+
+    let module_name = &quot;sceSysreg&quot;;
+
+    let wordlist_string = read_to_string(&quot;wordlist.txt&quot;).unwrap();
+    let wordlist_split = wordlist_string.split(&#x27;\n&#x27;);
+    let wordlist: Vec&lt;&amp;str&gt; = wordlist_split.collect();
+
+    let unknown_nids_string = read_to_string(&quot;unknown_nids.txt&quot;).unwrap();
+    let unk_nids_split = unknown_nids_string.split(&#x27;\n&#x27;);
+    let unk_nids: Vec&lt;&amp;str&gt; = unk_nids_split.collect();
+
+    wordlist.par_iter().for_each(|word| {
+        let test_string = module_name.to_string() + word;
+        let hash = sha1(test_string.as_str().as_bytes());
+        let test_nid = format!(
+        &quot;{:02X}{:02X}{:02X}{:02X}&quot;,
+        hash[3], hash[2], hash[1], hash[0],
+        );
+        if unk_nids.contains(&amp;test_nid.as_str()) {
+            println!(&quot;found match: {} = {}&quot;, test_nid, test_string);
+        }
+    });
+
+    let wordlist_2perms = wordlist
+        .iter()
+        .permutations(2)
+        .into_iter()
+        .par_bridge()
+        .into_par_iter();
+
+    wordlist_2perms.for_each(|perm| {
+        let test_string = module_name.to_string() + perm[0] + perm[1];
+        let hash = sha1(test_string.as_str().as_bytes());
+        let test_nid = format!(
+        &quot;{:02X}{:02X}{:02X}{:02X}&quot;,
+        hash[3], hash[2], hash[1], hash[0],
+        );
+        if unk_nids.contains(&amp;test_nid.as_str()) {
+            println!(&quot;found match: {} = {}&quot;, test_nid, test_string);
+        }
+    });
+
+    let wordlist_3perms = wordlist
+        .iter()
+        .permutations(3)
+        .into_iter()
+        .par_bridge()
+        .into_par_iter();
+
+    wordlist_3perms.for_each(|perm| {
+        let test_string = module_name.to_string() + perm[0] + perm[1] + perm[2];
+        let hash = sha1(test_string.as_str().as_bytes());
+        let test_nid = format!(
+        &quot;{:02X}{:02X}{:02X}{:02X}&quot;,
+        hash[3], hash[2], hash[1], hash[0],
+        );
+        if unk_nids.contains(&amp;test_nid.as_str()) {
+            println!(&quot;found match: {} = {}&quot;, test_nid, test_string);
+        }
+    });
+
+    let wordlist_4perms = wordlist
+        .iter()
+        .permutations(4)
+        .into_iter()
+        .par_bridge()
+        .into_par_iter();
+
+    wordlist_4perms.for_each(|perm| {
+        let test_string = module_name.to_string() + perm[0] + perm[1] + perm[2] + perm[3];
+        let hash = sha1(test_string.as_str().as_bytes());
+        let test_nid = format!(
+        &quot;{:02X}{:02X}{:02X}{:02X}&quot;,
+        hash[3], hash[2], hash[1], hash[0],
+        );
+        if unk_nids.contains(&amp;test_nid.as_str()) {
+            println!(&quot;found match: {} = {}&quot;, test_nid, test_string);
+        }
+    });
+}
+</code></pre>
+<p>I hard-coded the module name to look for functions of the sceSysreg module for this first
+test, and was planning to cover other modules as well. The program then uses rayon's parallel iterator and itertools to calculate permutations of a wordlist, and calculates hashes of the permuations with openssl. I used a python program to build a wordlist from known nids (basically splitting camelcase into words), and got some unknown nids from the emulator 
+<a href="https://github.com/jpcsp/jpcsp/blob/d4c891ec1e9ba820a70a9f17ba0af3295b593c6b/src/jpcsp/HLE/modules/sceSysreg.java">JPCSP</a>. My wordlist is at <a href="/wordlist.txt">wordlist.txt</a> and the nids I chose to crack are at <a href="/unknown_nids.txt">unknown_nids.txt</a></p>
+<p>Rust projects also have a Cargo.toml file with basic metadata, which I will supply below</p>
+<pre data-lang="toml" class="language-toml "><code class="language-toml" data-lang="toml">[package]
+name = &quot;nidcracker&quot;
+version = &quot;0.1.0&quot;
+authors = [&quot;Paul Sajna &lt;sajattack@gmail.com&gt;&quot;]
+edition = &quot;2018&quot;
+
+[dependencies]
+openssl = &quot;0.10&quot;
+rayon = &quot;1.4.1&quot;
+itertools = &quot;0.8.2&quot;
+</code></pre>
+<p>The latest version of the code is available at <a href="https://github.com/sajattack/nidcracker">https://github.com/sajattack/nidcracker</a>.
+Build the project like any other rust project, with <code>cargo build --release</code>, and the binary
+will be output as target/release/nidcracker.</p>
+<p>So I ran all this for a few hours, and you can see my results at <a href="https://gist.github.com/sajattack/dd4c6df4aec0de8b641216515bdc49ed">https://gist.github.com/sajattack/dd4c6df4aec0de8b641216515bdc49ed</a></p>
+<h2 id="conclusion">Conclusion</h2>
+<p>I'm not really sure where to go from here. The results are nonsensical so I will have to
+find another way to uncover kernel function names. If you have any suggestions feel free
+to contact me on <a href="https://twitter.com/sajattack">Twitter</a>.</p>
+</p>
+
+        </div>
+
+    </body>
+
+</html>

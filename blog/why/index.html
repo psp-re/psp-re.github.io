@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+      <!-- Enable responsiveness on mobile devices-->
+      <!-- viewport-fit=cover is to support iPhone X rounded corners and notch in landscape-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+
+      <title>PSP Reverse Engineering HQ</title>
+
+      <!-- CSS -->
+      <link rel="stylesheet" href="https://psp-re.github.io/print.css" media="print">
+      <link rel="stylesheet" href="https://psp-re.github.io/poole.css">
+      <link rel="stylesheet" href="https://psp-re.github.io/hyde.css">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+      
+        <link rel="alternate" type="application/atom+xml" title="RSS" href="https://psp-re.github.io/atom.xml">
+      
+
+      
+      
+    </head>
+
+    <body class=" ">
+        
+            <div class="sidebar">
+                <div class="container sidebar-sticky">
+                    <div class="sidebar-about">
+                        
+                            <a href="https:&#x2F;&#x2F;psp-re.github.io"><h1>PSP Reverse Engineering HQ</h1></a>
+                            
+                            <p class="lead">Your one stop shop for all things PSP Reverse Engineering</p>
+                            
+                        
+                    </div>
+
+                    <ul class="sidebar-nav">
+                        
+                        
+                        <li class="sidebar-nav-item"><a href="&#x2F;">Home</a></li>
+                        
+                        <li class="sidebar-nav-item"><a href="&#x2F;quickstart">Quick start guide</a></li>
+                        
+                        <li class="sidebar-nav-item"><a href="&#x2F;blog">Blog</a></li>
+                        
+                        <li class="sidebar-nav-item"><a href="https:&#x2F;&#x2F;github.com&#x2F;sajattack&#x2F;psp.re">Edit on Github</a></li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div class="content container">
+            
+<h1 class="title">
+  Why Reverse Engineer The PSP?
+</h1>                
+<span class="subtitle">By Paul Sajna</span><p/>
+<span class="post-date">July 13 2020</span>
+<p><h2 id="background">Background</h2>
+<p>The Sony Playstation Portable handheld game console is iconic partially because of it's
+prolific homebrew scene. It was the first game console that I personally owned as a kid,
+and perhaps in some way it inspired me to become a software engineer. At the very least, 
+it inspired me to hack, and hack it I did. Shortly after I got the PSP, I brought it to
+a random electronics consultant in my hometown to perform the Pandora's Battery hack
+which required a soldering iron I did not have at the time. I know many others who
+had similar experiences. </p>
+<h2 id="rust-and-puzzle-bobble">Rust and Puzzle Bobble</h2>
+<p>Lately I've been working on a project called 
+<a href="https://github.com/overdrivenpotato/rust-psp">rust-psp</a>. It's exactly what you think 
+it is, a rust-lang toolchain for making PSP Homebrew. We have achieved parity
+with the unofficial C SDK for user-mode applications. 
+What does an enterprising rust hacker do when he has met C? Go further. It all starts
+with Puzzle Bobble. While reading the C SDK to translate it to Rust, I came across an
+interesting comment in the source code:</p>
+<pre><code>&#x2F;* Note: Some of the structures, types, and definitions in this file were
+   extrapolated from symbolic debugging information found in the Japanese
+   version of Puzzle Bobble. *&#x2F;
+</code></pre>
+<p>Debug information in Puzzle Bobble you say? Fascinating. After seeing this comment a few
+times in various files, I couldn't help but crack it open in radare2/Cutter. I had 
+previously attempted reverse engineering 
+<a href="https://github.com/sajattack/c64-pacman-disassembly">C64 Pacman</a>, so I knew my way
+around the tool, and I was waiting on a PR to be merged before I could implement
+rust-std for PSP. So I cracked it open and found entire libraries that were not yet
+in the C SDK. Eventually radare2/Cutter became limiting and I switched to Ghidra.</p>
+<h2 id="today-puzzle-bobble-tomorrow-the-world">Today Puzzle Bobble, Tomorrow The World!</h2>
+<p>I reverse engineered sceGuDebugPrint from Puzzle Bobble, and there are many things in 
+Puzzle Bobble I still have to work on, but I couldn't help but wonder, &quot;How many other
+games like this are there?&quot; The answer I've found so far is 12. If you find more,
+please let me know. </p>
+<h2 id="k-great-but-why-did-you-make-a-website-about-it">K great, but why did you make a website about it?</h2>
+<p>I made this website to share findings with the community and have a central place
+for this information on the web. You are welcome to contribute on github.</p>
+</p>
+
+        </div>
+
+    </body>
+
+</html>

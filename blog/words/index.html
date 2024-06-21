@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+      <!-- Enable responsiveness on mobile devices-->
+      <!-- viewport-fit=cover is to support iPhone X rounded corners and notch in landscape-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+
+      <title>PSP Reverse Engineering HQ</title>
+
+      <!-- CSS -->
+      <link rel="stylesheet" href="https://psp-re.github.io/print.css" media="print">
+      <link rel="stylesheet" href="https://psp-re.github.io/poole.css">
+      <link rel="stylesheet" href="https://psp-re.github.io/hyde.css">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+      
+        <link rel="alternate" type="application/atom+xml" title="RSS" href="https://psp-re.github.io/atom.xml">
+      
+
+      
+      
+    </head>
+
+    <body class=" ">
+        
+            <div class="sidebar">
+                <div class="container sidebar-sticky">
+                    <div class="sidebar-about">
+                        
+                            <a href="https:&#x2F;&#x2F;psp-re.github.io"><h1>PSP Reverse Engineering HQ</h1></a>
+                            
+                            <p class="lead">Your one stop shop for all things PSP Reverse Engineering</p>
+                            
+                        
+                    </div>
+
+                    <ul class="sidebar-nav">
+                        
+                        
+                        <li class="sidebar-nav-item"><a href="&#x2F;">Home</a></li>
+                        
+                        <li class="sidebar-nav-item"><a href="&#x2F;quickstart">Quick start guide</a></li>
+                        
+                        <li class="sidebar-nav-item"><a href="&#x2F;blog">Blog</a></li>
+                        
+                        <li class="sidebar-nav-item"><a href="https:&#x2F;&#x2F;github.com&#x2F;sajattack&#x2F;psp.re">Edit on Github</a></li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div class="content container">
+            
+<h1 class="title">
+  Choose your words wisely
+</h1>                
+<span class="subtitle">By Paul Sajna</span><p/>
+<span class="post-date">March 23 2021</span>
+<p><blockquote>
+<p>“Words have a magical power. They can either bring the greatest happiness or the deepest despair.” -Sigmund Freud</p>
+</blockquote>
+<h2 id="the-problem">The problem</h2>
+<p>What went wrong when I initially tested my Rust nidcracker program? As I 
+mentioned in the original post, high entropy and a small hash == garbage output.
+The high entropy problem comes from using every permutation of 4 words from 
+1000 words (give or take).</p>
+<h2 id="the-solution">The solution</h2>
+<p>How can we solve it? Simple, use a shorter, more carefully crafted wordlist.
+User Meeeow in 
+<a href="https://discord.gg/bePrj9W">The PSP Homebrew Discord Server</a>, 
+One of the main contributors behind <a href="https://github.com/uofw/uofw">UOFW</a>, used 
+my same exact nidcracker program from the previous post, combined with some
+knowledge of what the functions with unknown NIDs did, chose specific words 
+related to what the functions were doing, and successfully cracked a few unknown 
+NIDs. </p>
+<pre><code>found match: 0x7939C851 = sceChkregGetPspModel
+found match: 0x6894A027 = sceChkregGetPsFlags
+</code></pre>
+<h2 id="lessons">Lessons</h2>
+<p>The first lesson is, with the right wordlist, these NIDs can be cracked,
+and there's absolutely nothing wrong with my program, but with the approach
+I took to creating the wordlist for it. In the first blog post, I basically
+alleged that NIDs couldn't be cracked without the results being meaningless.
+I now know this is not the case. In fact, watch what happens if I cheat a bit
+and use known nids, with a wordlist built from words in those known NIDs.</p>
+<pre><code>found match: ED1410E0 = sceKernelDeleteFpl
+found match: 86255ADA = sceKernelDeleteMbx
+found match: 6B2371C2 = sceKernelDeleteModule
+found match: F8170FBE = sceKernelDeleteMutex
+found match: 28B6489C = sceKernelDeleteSema
+found match: 9FA03CD3 = sceKernelDeleteThread
+found match: 32BF938E = sceKernelDeleteTlspl
+found match: 89B3D48C = sceKernelDeleteVpl
+found match: 3FC9AE6A = sceKernelDevkitVersion
+found match: D636B827 = sceKernelDipswAll
+found match: 5282DD5E = sceKernelDipswSet
+found match: D774BA45 = sceKernelDisableIntr
+found match: 1C46158A = sceKernelDmaExit
+found match: 4D6E7305 = sceKernelEnableIntr
+found match: 05572A5F = sceKernelExitGame
+...
+</code></pre>
+<p>Within seconds, we have hundreds of valid nids. (list shortened for blogpost) </p>
+<p>That brings me to the second
+lesson: test the happy path before giving up. A coworker of mine says the 
+happy path hides bugs, because it's usually the things you don't think about
+that cause problems in code. But, if we never test the happy path at all,
+how can we ever be happy? In the previous blog post, I tested NIDs that had
+been uncracked for years, with 1000 words from NIDs we knew, and concluded
+that a solution was impossible. I failed to ever test the happy path, and I
+was unhappy with the outcome. It seems obvious now. </p>
+<p>In conclusion:</p>
+<blockquote>
+<p>Don't worry, be happy. -Bob Marley</p>
+</blockquote>
+<p>PS: I wrote a <a href="https://github.com/pspdev/hashcat">hashcat module for NIDs</a> after
+I was inspired by the successful outcomes of Meeeow.</p>
+</p>
+
+        </div>
+
+    </body>
+
+</html>

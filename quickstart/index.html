@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+      <!-- Enable responsiveness on mobile devices-->
+      <!-- viewport-fit=cover is to support iPhone X rounded corners and notch in landscape-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+
+      <title>PSP Reverse Engineering HQ</title>
+
+      <!-- CSS -->
+      <link rel="stylesheet" href="https://psp-re.github.io/print.css" media="print">
+      <link rel="stylesheet" href="https://psp-re.github.io/poole.css">
+      <link rel="stylesheet" href="https://psp-re.github.io/hyde.css">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+      
+        <link rel="alternate" type="application/atom+xml" title="RSS" href="https://psp-re.github.io/atom.xml">
+      
+
+      
+      
+    </head>
+
+    <body class=" ">
+        
+            <div class="sidebar">
+                <div class="container sidebar-sticky">
+                    <div class="sidebar-about">
+                        
+                            <a href="https:&#x2F;&#x2F;psp-re.github.io"><h1>PSP Reverse Engineering HQ</h1></a>
+                            
+                            <p class="lead">Your one stop shop for all things PSP Reverse Engineering</p>
+                            
+                        
+                    </div>
+
+                    <ul class="sidebar-nav">
+                        
+                        
+                        <li class="sidebar-nav-item"><a href="&#x2F;">Home</a></li>
+                        
+                        <li class="sidebar-nav-item"><a href="&#x2F;quickstart">Quick start guide</a></li>
+                        
+                        <li class="sidebar-nav-item"><a href="&#x2F;blog">Blog</a></li>
+                        
+                        <li class="sidebar-nav-item"><a href="https:&#x2F;&#x2F;github.com&#x2F;sajattack&#x2F;psp.re">Edit on Github</a></li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div class="content container">
+            
+	<h1>PSP RE quick start guide</h1>
+  <div><h2 id="introduction">Introduction</h2>
+<p>This short guide will present you all the necessary resources you need to start reverse
+engineering on PSP. This guide works for both reverse engineering kernel modules and
+userland (most probably game) binaries.</p>
+<p>It is supposed you already know how to reverse engineer: if you don't, check a Ghidra
+tutorial and preferably also a MIPS assembly course.</p>
+<p>Note there exists alternatives to Ghidra, for example using IDA Pro. Ghidra is used here because:</p>
+<ul>
+<li>its ecosystem is more mature, especially for PSP ;</li>
+<li>it's opensource and easy to install ;</li>
+<li>it has convenient features such as decompilation, etc.</li>
+</ul>
+<h2 id="step-1-getting-a-binary-to-re">Step 1: getting a binary to RE</h2>
+<p>In order to get a binary to decrypt, you first need to pick:</p>
+<ul>
+<li>the game binary, located in <code>psp_game/sysdir/</code> of the game ISO, either <code>boot.bin</code> (unencrypted) or <code>eboot.bin</code> (encrypted) ;</li>
+<li>or an updater .PBP, if you want to reverse engineer the kernel.</li>
+</ul>
+<p>In both cases, if you encounter a .PBP file or an encrypted file, you can use the
+<a href="https://github.com/John-K/pspdecrypt">pspdecrypt</a> tool to decrypt it.</p>
+<h2 id="step-2-setting-up-ghidra">Step 2: setting up Ghidra</h2>
+<p>Install Ghidra and install <a href="https://github.com/kotcrab/ghidra-allegrex">ghidra-allegrex</a> using
+the included README. Note there are some limitations in the plugin: VFPU support is limited,
+64-bit return values or arguments (using two registers) are not properly handled.</p>
+<p>After Ghidra is setup, you can start it and install the
+<a href="https://github.com/pspdev/psp-ghidra-scripts">psp-ghidra-scripts</a> using the included README
+in order to fix function imports and exports.</p>
+<p>Then, you can download the <a href="/pspsdk.gdt">pspsdk.gdt</a> type archive for games, or
+<a href="/uofw.gdt">uofw.gdt</a> for kernel modules (or both, but that might cause incompatibilities).</p>
+<p>These files were built using include files from the PSPSDK or uOFW using the <code>File</code> -&gt; <code>Parse C Source...</code> menu.
+If you want to regenerate (or update) them:</p>
+<ul>
+<li>for the PSPSDK, you need to insert in <code>Source files to parse</code>, from the <code>src</code> folder,
+<code>base/psptypes.h</code>, <code>debug/*.h</code>, <code>user/pspkerneltypes.h</code>, <code>user/*.h</code>, then the rest of the <code>.h</code> files</li>
+<li>for uOFW, you need to insert <code>include/common/*.h</code>, then <code>include/*.h</code></li>
+</ul>
+<h2 id="step-3-analyzing-the-binary">Step 3: analyzing the binary</h2>
+<p>Now that Ghidra is up and running, you should:</p>
+<ol>
+<li>Import the (decrypted) binary file in Ghidra</li>
+<li>Run &quot;Analyze&quot; when prompted for it</li>
+<li>Run the <code>SonyPSPResolveNIDs.py</code> script</li>
+<li>Import the .gdt type archive into the Ghidra project (the same way you imported the binary file)</li>
+<li>In the <code>Data Type Manager</code> open it with <code>Menu -&gt; Open Project Archive...</code></li>
+<li>Right-click on the imported data type archive and use <code>Apply Function Data Types</code></li>
+</ol>
+<p>If you're reverse engineering a low-level kernel module addressing the hardware through the <code>0xB.......</code>
+memory range, you'll also want to run the <code>SonyPSPMapHWRegisters.py</code> script (you can run it anytime).</p>
+<p>Now all the imports should use the correct signatures, and you're good to go!</p>
+</div>
+
+        </div>
+
+    </body>
+
+</html>

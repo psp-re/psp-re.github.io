@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>PSP Reverse Engineering HQ</title>
+    <subtitle>Your one stop shop for all things PSP Reverse Engineering</subtitle>
+    <link rel="self" type="application/atom+xml" href="https://psp-re.github.io/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://psp-re.github.io"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2021-03-23T00:00:00+00:00</updated>
+    <id>https://psp-re.github.io/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Choose your words wisely</title>
+        <published>2021-03-23T00:00:00+00:00</published>
+        <updated>2021-03-23T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://psp-re.github.io/blog/words/"/>
+        <id>https://psp-re.github.io/blog/words/</id>
+        
+        <content type="html" xml:base="https://psp-re.github.io/blog/words/">&lt;blockquote&gt;
+&lt;p&gt;“Words have a magical power. They can either bring the greatest happiness or the deepest despair.” -Sigmund Freud&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h2 id=&quot;the-problem&quot;&gt;The problem&lt;&#x2F;h2&gt;
+&lt;p&gt;What went wrong when I initially tested my Rust nidcracker program? As I 
+mentioned in the original post, high entropy and a small hash == garbage output.
+The high entropy problem comes from using every permutation of 4 words from 
+1000 words (give or take).&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;the-solution&quot;&gt;The solution&lt;&#x2F;h2&gt;
+&lt;p&gt;How can we solve it? Simple, use a shorter, more carefully crafted wordlist.
+User Meeeow in 
+&lt;a href=&quot;https:&#x2F;&#x2F;discord.gg&#x2F;bePrj9W&quot;&gt;The PSP Homebrew Discord Server&lt;&#x2F;a&gt;, 
+One of the main contributors behind &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;uofw&#x2F;uofw&quot;&gt;UOFW&lt;&#x2F;a&gt;, used 
+my same exact nidcracker program from the previous post, combined with some
+knowledge of what the functions with unknown NIDs did, chose specific words 
+related to what the functions were doing, and successfully cracked a few unknown 
+NIDs. &lt;&#x2F;p&gt;
+&lt;pre&gt;&lt;code&gt;found match: 0x7939C851 = sceChkregGetPspModel
+found match: 0x6894A027 = sceChkregGetPsFlags
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;lessons&quot;&gt;Lessons&lt;&#x2F;h2&gt;
+&lt;p&gt;The first lesson is, with the right wordlist, these NIDs can be cracked,
+and there&#x27;s absolutely nothing wrong with my program, but with the approach
+I took to creating the wordlist for it. In the first blog post, I basically
+alleged that NIDs couldn&#x27;t be cracked without the results being meaningless.
+I now know this is not the case. In fact, watch what happens if I cheat a bit
+and use known nids, with a wordlist built from words in those known NIDs.&lt;&#x2F;p&gt;
+&lt;pre&gt;&lt;code&gt;found match: ED1410E0 = sceKernelDeleteFpl
+found match: 86255ADA = sceKernelDeleteMbx
+found match: 6B2371C2 = sceKernelDeleteModule
+found match: F8170FBE = sceKernelDeleteMutex
+found match: 28B6489C = sceKernelDeleteSema
+found match: 9FA03CD3 = sceKernelDeleteThread
+found match: 32BF938E = sceKernelDeleteTlspl
+found match: 89B3D48C = sceKernelDeleteVpl
+found match: 3FC9AE6A = sceKernelDevkitVersion
+found match: D636B827 = sceKernelDipswAll
+found match: 5282DD5E = sceKernelDipswSet
+found match: D774BA45 = sceKernelDisableIntr
+found match: 1C46158A = sceKernelDmaExit
+found match: 4D6E7305 = sceKernelEnableIntr
+found match: 05572A5F = sceKernelExitGame
+...
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Within seconds, we have hundreds of valid nids. (list shortened for blogpost) &lt;&#x2F;p&gt;
+&lt;p&gt;That brings me to the second
+lesson: test the happy path before giving up. A coworker of mine says the 
+happy path hides bugs, because it&#x27;s usually the things you don&#x27;t think about
+that cause problems in code. But, if we never test the happy path at all,
+how can we ever be happy? In the previous blog post, I tested NIDs that had
+been uncracked for years, with 1000 words from NIDs we knew, and concluded
+that a solution was impossible. I failed to ever test the happy path, and I
+was unhappy with the outcome. It seems obvious now. &lt;&#x2F;p&gt;
+&lt;p&gt;In conclusion:&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Don&#x27;t worry, be happy. -Bob Marley&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;PS: I wrote a &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;pspdev&#x2F;hashcat&quot;&gt;hashcat module for NIDs&lt;&#x2F;a&gt; after
+I was inspired by the successful outcomes of Meeeow.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>NID Cracking</title>
+        <published>2020-10-07T00:00:00+00:00</published>
+        <updated>2020-10-07T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://psp-re.github.io/blog/nid-cracking/"/>
+        <id>https://psp-re.github.io/blog/nid-cracking/</id>
+        
+        <content type="html" xml:base="https://psp-re.github.io/blog/nid-cracking/">&lt;h2 id=&quot;what-is-a-nid&quot;&gt;What is a NID?&lt;&#x2F;h2&gt;
+&lt;p&gt;A NID, which I believe stands for Name Identifier, is an identifier used in Sony&#x27;s PRX
+executable format for function imports and exports. They are located in the .rodata.SceNid
+section of every PRX, to identify which operating system or other external functions are
+used in the program. A NID consists of the first 4 little-endian bytes of the SHA-1 hash
+of the function name, and in later versions of the PSP OS, a salt.  Legend has it, 
+they can be bruteforced to discover the names Sony used for their functions, to aid in
+reverse engineering. Experienced cryptographers would have probably realized the problem
+before writing a program to check the results. &lt;&#x2F;p&gt;
+&lt;h2 id=&quot;the-problem&quot;&gt;The problem&lt;&#x2F;h2&gt;
+&lt;p&gt;So it turns out, there are quite a few hash collisions for the first 4 hexadecimal bytes 
+of a SHA-1 hash. Here are a few of my favourites, which you can check by running 
+&lt;code&gt;echo -n &amp;lt;name&amp;gt; | sha1sum&lt;&#x2F;code&gt;
+on any linux pc (assuming checksum packages are installed). Note that you have to swap 
+endianness (read the bytes backwards). &lt;&#x2F;p&gt;
+&lt;pre&gt;&lt;code&gt;7CF05E81 = sceSysregAllocateNotifyRapidHead
+4C0BED71 = sceSysregAbortFatfmtSteepIn
+7CF05E81 = sceSysregActivateDataMbogoPIO
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;I purposely chose two here that came up with the same NID for the function name, to 
+demonstrate the problem of hash collisions. If you&#x27;re following along at home, run the 
+following at a linux prompt:&lt;&#x2F;p&gt;
+&lt;pre&gt;&lt;code&gt;echo -n sceSysregAllocateNotifyRapidHead | sha1sum
+echo -n sceSysregActivateDataMbogoPIO | sha1sum
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The results are&lt;&#x2F;p&gt;
+&lt;pre&gt;&lt;code&gt;815ef07c4b2f44c74cab9af3772c49e49dc41544  -
+815ef07cbd77ac3b13f1813c063aff7794960741  -
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;It is plain to see  that they start with the same 4 bytes (8 characters), and if you
+read the bytes (digit pairs) backwards, you will see the NID. So that&#x27;s no good, 
+we have multiple possible answers to the same problem, and both of them are nonsensical. 
+I&#x27;m unsure how functionnames were ever recovered from NIDs, after working through this.
+I know some of the function names were leaked in &lt;a href=&quot;&#x2F;blog&#x2F;list&#x2F;&quot;&gt;games with debug symbols&lt;&#x2F;a&gt;,
+but that doesn&#x27;t account for all the kernel functions that were never used in games
+that have been recovered. Maybe the salts narrow the problem down a bit, I&#x27;m not sure.
+I tested without salts, because I was told earlier versions of the kernel didn&#x27;t use them,
+with NIDs, and it was easier for me not to.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;methods&quot;&gt;Methods&lt;&#x2F;h2&gt;
+&lt;p&gt;So, if you want to try your hand at NID cracking, I&#x27;ll explain what I did in this section.
+I wrote a parallelized &lt;a href=&quot;https:&#x2F;&#x2F;rust-lang.org&quot;&gt;Rust&lt;&#x2F;a&gt; program that runs on a modern
+desktop CPU. I was planning to later use GPUs for more parallelism&#x2F;speed, but the 
+ridiculous results I got have me convinced it&#x27;s not worth persuing further. &lt;&#x2F;p&gt;
+&lt;p&gt;If you&#x27;re unfamiliar with Rust, you can download it at &lt;a href=&quot;https:&#x2F;&#x2F;rustup.rs&quot;&gt;https:&#x2F;&#x2F;rustup.rs&lt;&#x2F;a&gt;, and learn how to use it at &lt;a href=&quot;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;book&#x2F;&quot;&gt;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;book&#x2F;&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;The (slightly messy) source of my program is below:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;rust&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;use openssl::sha::sha1;
+use rayon::prelude::*;
+use rayon::iter::ParallelBridge;
+use std::fs::read_to_string;
+use itertools::Itertools;
+
+fn main() {
+    &amp;#x2F;&amp;#x2F;let module_names_string = read_to_string(&amp;quot;module-names.txt&amp;quot;).unwrap();
+    &amp;#x2F;&amp;#x2F;let module_names_split = module_names_string.split(&amp;#x27;\n&amp;#x27;);
+    &amp;#x2F;&amp;#x2F;let module_names: Vec&amp;lt;&amp;amp;str&amp;gt; = module_names_split.collect();
+
+    let module_name = &amp;quot;sceSysreg&amp;quot;;
+
+    let wordlist_string = read_to_string(&amp;quot;wordlist.txt&amp;quot;).unwrap();
+    let wordlist_split = wordlist_string.split(&amp;#x27;\n&amp;#x27;);
+    let wordlist: Vec&amp;lt;&amp;amp;str&amp;gt; = wordlist_split.collect();
+
+    let unknown_nids_string = read_to_string(&amp;quot;unknown_nids.txt&amp;quot;).unwrap();
+    let unk_nids_split = unknown_nids_string.split(&amp;#x27;\n&amp;#x27;);
+    let unk_nids: Vec&amp;lt;&amp;amp;str&amp;gt; = unk_nids_split.collect();
+
+    wordlist.par_iter().for_each(|word| {
+        let test_string = module_name.to_string() + word;
+        let hash = sha1(test_string.as_str().as_bytes());
+        let test_nid = format!(
+        &amp;quot;{:02X}{:02X}{:02X}{:02X}&amp;quot;,
+        hash[3], hash[2], hash[1], hash[0],
+        );
+        if unk_nids.contains(&amp;amp;test_nid.as_str()) {
+            println!(&amp;quot;found match: {} = {}&amp;quot;, test_nid, test_string);
+        }
+    });
+
+    let wordlist_2perms = wordlist
+        .iter()
+        .permutations(2)
+        .into_iter()
+        .par_bridge()
+        .into_par_iter();
+
+    wordlist_2perms.for_each(|perm| {
+        let test_string = module_name.to_string() + perm[0] + perm[1];
+        let hash = sha1(test_string.as_str().as_bytes());
+        let test_nid = format!(
+        &amp;quot;{:02X}{:02X}{:02X}{:02X}&amp;quot;,
+        hash[3], hash[2], hash[1], hash[0],
+        );
+        if unk_nids.contains(&amp;amp;test_nid.as_str()) {
+            println!(&amp;quot;found match: {} = {}&amp;quot;, test_nid, test_string);
+        }
+    });
+
+    let wordlist_3perms = wordlist
+        .iter()
+        .permutations(3)
+        .into_iter()
+        .par_bridge()
+        .into_par_iter();
+
+    wordlist_3perms.for_each(|perm| {
+        let test_string = module_name.to_string() + perm[0] + perm[1] + perm[2];
+        let hash = sha1(test_string.as_str().as_bytes());
+        let test_nid = format!(
+        &amp;quot;{:02X}{:02X}{:02X}{:02X}&amp;quot;,
+        hash[3], hash[2], hash[1], hash[0],
+        );
+        if unk_nids.contains(&amp;amp;test_nid.as_str()) {
+            println!(&amp;quot;found match: {} = {}&amp;quot;, test_nid, test_string);
+        }
+    });
+
+    let wordlist_4perms = wordlist
+        .iter()
+        .permutations(4)
+        .into_iter()
+        .par_bridge()
+        .into_par_iter();
+
+    wordlist_4perms.for_each(|perm| {
+        let test_string = module_name.to_string() + perm[0] + perm[1] + perm[2] + perm[3];
+        let hash = sha1(test_string.as_str().as_bytes());
+        let test_nid = format!(
+        &amp;quot;{:02X}{:02X}{:02X}{:02X}&amp;quot;,
+        hash[3], hash[2], hash[1], hash[0],
+        );
+        if unk_nids.contains(&amp;amp;test_nid.as_str()) {
+            println!(&amp;quot;found match: {} = {}&amp;quot;, test_nid, test_string);
+        }
+    });
+}
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;I hard-coded the module name to look for functions of the sceSysreg module for this first
+test, and was planning to cover other modules as well. The program then uses rayon&#x27;s parallel iterator and itertools to calculate permutations of a wordlist, and calculates hashes of the permuations with openssl. I used a python program to build a wordlist from known nids (basically splitting camelcase into words), and got some unknown nids from the emulator 
+&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;jpcsp&#x2F;jpcsp&#x2F;blob&#x2F;d4c891ec1e9ba820a70a9f17ba0af3295b593c6b&#x2F;src&#x2F;jpcsp&#x2F;HLE&#x2F;modules&#x2F;sceSysreg.java&quot;&gt;JPCSP&lt;&#x2F;a&gt;. My wordlist is at &lt;a href=&quot;&#x2F;wordlist.txt&quot;&gt;wordlist.txt&lt;&#x2F;a&gt; and the nids I chose to crack are at &lt;a href=&quot;&#x2F;unknown_nids.txt&quot;&gt;unknown_nids.txt&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Rust projects also have a Cargo.toml file with basic metadata, which I will supply below&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;toml&quot; class=&quot;language-toml &quot;&gt;&lt;code class=&quot;language-toml&quot; data-lang=&quot;toml&quot;&gt;[package]
+name = &amp;quot;nidcracker&amp;quot;
+version = &amp;quot;0.1.0&amp;quot;
+authors = [&amp;quot;Paul Sajna &amp;lt;sajattack@gmail.com&amp;gt;&amp;quot;]
+edition = &amp;quot;2018&amp;quot;
+
+[dependencies]
+openssl = &amp;quot;0.10&amp;quot;
+rayon = &amp;quot;1.4.1&amp;quot;
+itertools = &amp;quot;0.8.2&amp;quot;
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The latest version of the code is available at &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;sajattack&#x2F;nidcracker&quot;&gt;https:&#x2F;&#x2F;github.com&#x2F;sajattack&#x2F;nidcracker&lt;&#x2F;a&gt;.
+Build the project like any other rust project, with &lt;code&gt;cargo build --release&lt;&#x2F;code&gt;, and the binary
+will be output as target&#x2F;release&#x2F;nidcracker.&lt;&#x2F;p&gt;
+&lt;p&gt;So I ran all this for a few hours, and you can see my results at &lt;a href=&quot;https:&#x2F;&#x2F;gist.github.com&#x2F;sajattack&#x2F;dd4c6df4aec0de8b641216515bdc49ed&quot;&gt;https:&#x2F;&#x2F;gist.github.com&#x2F;sajattack&#x2F;dd4c6df4aec0de8b641216515bdc49ed&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;&#x2F;h2&gt;
+&lt;p&gt;I&#x27;m not really sure where to go from here. The results are nonsensical so I will have to
+find another way to uncover kernel function names. If you have any suggestions feel free
+to contact me on &lt;a href=&quot;https:&#x2F;&#x2F;twitter.com&#x2F;sajattack&quot;&gt;Twitter&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>List of Sony PSP games with debug symbols</title>
+        <published>2020-08-24T00:00:00+00:00</published>
+        <updated>2020-08-24T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://psp-re.github.io/blog/list/"/>
+        <id>https://psp-re.github.io/blog/list/</id>
+        
+        <content type="html" xml:base="https://psp-re.github.io/blog/list/">&lt;ul&gt;
+&lt;li&gt;Adventure Player (Japan) (v1.05)&lt;&#x2F;li&gt;
+&lt;li&gt;Armored Core - Formula Front (Korea) (v1.02)&lt;&#x2F;li&gt;
+&lt;li&gt;Astonishia Story (Korea) (v1.02)&lt;&#x2F;li&gt;
+&lt;li&gt;Big Bang Bang (Japan) (Sample) (2003-09-22)&lt;&#x2F;li&gt;
+&lt;li&gt;Demo Disc for PSP Vol. 1 (Japan) (Demo)&lt;&#x2F;li&gt;
+&lt;li&gt;Glorace - Phantastic Carnival (Korea) (v1.02)&lt;&#x2F;li&gt;
+&lt;li&gt;Jan Sangoku Musou (Japan) (v1.02)&lt;&#x2F;li&gt;
+&lt;li&gt;Jikan de Fantasia (Japan)&lt;&#x2F;li&gt;
+&lt;li&gt;Puzzle Bobble Pocket (Japan) (v1.01)&lt;&#x2F;li&gt;
+&lt;li&gt;Rengoku - The Tower of Purgatory (Japan) (v1.01)&lt;&#x2F;li&gt;
+&lt;li&gt;Sampler Disc for PSP Vol. 1 (USA)&lt;&#x2F;li&gt;
+&lt;li&gt;Space Invaders - Galaxy Beat (Japan) (v1.02)&lt;&#x2F;li&gt;
+&lt;li&gt;Yu-Gi-Oh! Duel Monsters GX - Tag Force (Japan) (En,Ja,Fr,De,Es,It) (v1.02)&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Feel free to PR &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;sajattack&#x2F;psp.re&quot;&gt;this website on github&lt;&#x2F;a&gt; if you find more!&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Why Reverse Engineer The PSP?</title>
+        <published>2020-07-13T00:00:00+00:00</published>
+        <updated>2020-07-13T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://psp-re.github.io/blog/why/"/>
+        <id>https://psp-re.github.io/blog/why/</id>
+        
+        <content type="html" xml:base="https://psp-re.github.io/blog/why/">&lt;h2 id=&quot;background&quot;&gt;Background&lt;&#x2F;h2&gt;
+&lt;p&gt;The Sony Playstation Portable handheld game console is iconic partially because of it&#x27;s
+prolific homebrew scene. It was the first game console that I personally owned as a kid,
+and perhaps in some way it inspired me to become a software engineer. At the very least, 
+it inspired me to hack, and hack it I did. Shortly after I got the PSP, I brought it to
+a random electronics consultant in my hometown to perform the Pandora&#x27;s Battery hack
+which required a soldering iron I did not have at the time. I know many others who
+had similar experiences. &lt;&#x2F;p&gt;
+&lt;h2 id=&quot;rust-and-puzzle-bobble&quot;&gt;Rust and Puzzle Bobble&lt;&#x2F;h2&gt;
+&lt;p&gt;Lately I&#x27;ve been working on a project called 
+&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;overdrivenpotato&#x2F;rust-psp&quot;&gt;rust-psp&lt;&#x2F;a&gt;. It&#x27;s exactly what you think 
+it is, a rust-lang toolchain for making PSP Homebrew. We have achieved parity
+with the unofficial C SDK for user-mode applications. 
+What does an enterprising rust hacker do when he has met C? Go further. It all starts
+with Puzzle Bobble. While reading the C SDK to translate it to Rust, I came across an
+interesting comment in the source code:&lt;&#x2F;p&gt;
+&lt;pre&gt;&lt;code&gt;&amp;#x2F;* Note: Some of the structures, types, and definitions in this file were
+   extrapolated from symbolic debugging information found in the Japanese
+   version of Puzzle Bobble. *&amp;#x2F;
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Debug information in Puzzle Bobble you say? Fascinating. After seeing this comment a few
+times in various files, I couldn&#x27;t help but crack it open in radare2&#x2F;Cutter. I had 
+previously attempted reverse engineering 
+&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;sajattack&#x2F;c64-pacman-disassembly&quot;&gt;C64 Pacman&lt;&#x2F;a&gt;, so I knew my way
+around the tool, and I was waiting on a PR to be merged before I could implement
+rust-std for PSP. So I cracked it open and found entire libraries that were not yet
+in the C SDK. Eventually radare2&#x2F;Cutter became limiting and I switched to Ghidra.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;today-puzzle-bobble-tomorrow-the-world&quot;&gt;Today Puzzle Bobble, Tomorrow The World!&lt;&#x2F;h2&gt;
+&lt;p&gt;I reverse engineered sceGuDebugPrint from Puzzle Bobble, and there are many things in 
+Puzzle Bobble I still have to work on, but I couldn&#x27;t help but wonder, &amp;quot;How many other
+games like this are there?&amp;quot; The answer I&#x27;ve found so far is 12. If you find more,
+please let me know. &lt;&#x2F;p&gt;
+&lt;h2 id=&quot;k-great-but-why-did-you-make-a-website-about-it&quot;&gt;K great, but why did you make a website about it?&lt;&#x2F;h2&gt;
+&lt;p&gt;I made this website to share findings with the community and have a central place
+for this information on the web. You are welcome to contribute on github.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
